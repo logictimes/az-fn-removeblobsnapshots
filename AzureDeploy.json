@@ -2,26 +2,48 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "siteName": {
+    "FunctionName": {
       "type": "string",
       "metadata": {
         "description": "The name of the function app that you wish to create."
       }
+    },
+    "StorageToMonitor": {
+      "type": "string",
+      "metadata": {
+        "description": "Connection string to the storage accout."
+      }
+    },
+    "BlobContainer": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Blob to monitor."
+      }
+    },
+      "retentionDays": {
+        "type": "string",
+        "metadata": {
+          "description": "Nuber of days for Snapshot."
+        }
     }
+
   },
   "variables": {
-    "storageName": "[concat('function', uniqueString(parameters('siteName')))]",
-    "contentShareName": "[toLower(parameters('siteName'))]",
+    "storageName": "[concat('function', uniqueString(parameters('FunctionName')))]",
+    "contentShareName": "[toLower(parameters('FunctionName'))]",
     "repoUrl": "https://github.com/logictimes/az-fn-removeblobsnapshots.git",
-    "branch": "master"
+    "branch": "master",
+    "StorageToMonitor": "[toLower(parameters('StorageToMonitor'))]",
+    "BlobContainer": "[toLower(parameters('BlobContainer'))]",
+    "retentionDays": "[toLower(parameters('retentionDays'))]"
   },
   "resources": [
     {
       "apiVersion": "2015-08-01",
-      "name": "[parameters('siteName')]",
+      "name": "[parameters('FunctionName')]",
       "type": "Microsoft.Web/sites",
       "properties": {
-        "name": "[parameters('siteName')]",
+        "name": "[parameters('FunctionName')]",
         "siteConfig": {
           "appSettings": [
             {
@@ -47,7 +69,20 @@
             {
               "name": "WEBSITE_CONTENTSHARE",
               "value": "[variables('contentShareName')]"
+            },
+            {
+              "name": "storageAccount",
+              "value": "[variables('StorageToMonitor')]"
+            },
+            {
+              "name": "storageContainer",
+              "value": "[variables('BlobContainer')]"
+            },
+            {
+              "name": "retentionDays",
+              "value": "[variables('retentionDays')]"
             }
+            
           ]
         },
         "clientAffinityEnabled": false
@@ -58,7 +93,7 @@
           "name": "web",
           "type": "sourcecontrols",
           "dependsOn": [
-            "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
+            "[resourceId('Microsoft.Web/Sites', parameters('FunctionName'))]"
           ],
           "properties": {
             "RepoUrl": "[variables('repoURL')]",
@@ -86,7 +121,7 @@
   "outputs": {
     "siteUri": {
       "type": "string",
-      "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', parameters('siteName'))).hostNames[0])]"
+      "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', parameters('FunctionName'))).hostNames[0])]"
     }
   }
 }
