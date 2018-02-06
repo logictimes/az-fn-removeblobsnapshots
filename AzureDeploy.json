@@ -17,7 +17,7 @@
   },
   "resources": [
     {
-      "apiVersion": "2016-03-01",
+      "apiVersion": "2015-08-01",
       "name": "[parameters('siteName')]",
       "type": "Microsoft.Web/sites",
       "properties": {
@@ -88,4 +88,5 @@
       "type": "string",
       "value": "[concat('https://',reference(resourceId('Microsoft.Web/sites', parameters('siteName'))).hostNames[0])]"
     }
-  
+  }
+}
