@@ -1,0 +1,20 @@
+{
+  "bindings": [
+    {
+      "type": "timerTrigger",
+      "name": "myTimer",
+      "schedule": "0 59 23 * * *",
+      "direction": "in"
+    },
+    {
+      "type": "sendGrid",
+      "name": "$return",
+      "direction": "out",
+      "apiKey": "apiKey",
+      "from": "az-fn-removeBlobSnapshots <no-replay@functions.com>",
+      "to": "az-fn-removeBlobSnapshots <no-replay@functions.com>"
+    }
+
+  ],
+  "disabled": false
+}
